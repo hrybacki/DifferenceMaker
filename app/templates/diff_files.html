@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DifferenceMaker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/dropzone.css" rel="stylesheet" media="screen">
+</head>
+<h1>DifferenceMaker</h1>
+<body>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/dropzone.js"></script>
+<div class="container-fluid row-fluid">
+    <div class="row-fluid" >
+        {{ changes | safe }}
+    </div>
+</div>
+<form action="/diff" method="POST">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <textarea input class="span6" type="text" placeholder="Original Text" rows="8" id="old_text" name="old_text">{{ old_text }}</textarea>
+            <textarea input class="span6" type="text" placeholder="Changed Text" rows="8" name="new_text">{{ new_text }}</textarea>
+        </div>
+    </div>
+    <div align="center">
+        <button class="btn btn-large btn-primary" type="submit" onclick="launch()">Find the Difference in the Text!</button>
+    </div>
+</form>
+<h4>Upload two text files (.txt) to find the difference!</h4>
+{#<form action="/diff_files" method="POST" enctype="multipart/form-data">#}
+{#    <div class="container-fluid">#}
+{#        <div class="row-fluid">#}
+{#            <input class="span6" type="file" name="old_file">#}
+{#            <input class="span6" type="file" name="new_file">#}
+{#        </div>#}
+{#    </div>#}
+{#    <div align="center">#}
+{#        <button class="btn btn-large btn-primary" type="submit">Find the Difference in Your Text Files!</button>#}
+{#    </div>#}
+{#</form>#}
+<script type="text/javascript">
+        window.onload=function(){
+        $('a').tooltip()
+    }
+
+    function uploadClicked() {
+        var dz = Dropzone.forElement("[id='dropper']");
+        dz.options.enqueueForUpload = false;
+        for (var i = 0; i < dz.files.length; i++) {
+            dz.filesQueue.push(dz.files[i]);
+        }
+        dz.files=[];
+        console.log(dz.filesQueue);
+        console.log(dz.filesQueue.length)
+        if (dz.filesQueue.length!=2){
+            alert('You must upload two files!');
+            if (dz.filesQueue.length>2){
+                window.location='http://127.0.0.1:5000/';
+            }
+        }
+
+        if  (dz.filesQueue.length==2){
+            dz.processQueue();
+            dz.on('finished', function(){
+                window.location='http://127.0.0.1:5000/diff_drag_files';
+            })
+        }
+    }
+</script>
+<form action="/dealer" class="dropzone" id="dropper" enctype="multipart/form-data">
+</form>
+<div align="center">
+    <button align="center" class="btn btn-large btn-primary" onclick="uploadClicked()">Find the Difference in Your Text Files!</button>
+</div>
+</body>
+</html>
